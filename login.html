@@ -1,20 +1,30 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Studio Beleza Delicada</title>
+    <title>Login - Studio Nay Lopes</title>
     <link rel="stylesheet" href="style.css">
+    <script>
+        (function () {
+            try {
+                var theme = localStorage.getItem('sbd-theme');
+                if (!theme && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) theme = 'dark';
+                if (theme === 'light' || theme === 'dark') document.documentElement.setAttribute('data-theme', theme);
+            } catch (e) {}
+        })();
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="main-wrapper">
         <header class="navbar">
-            <div class="logo">
-                <i class="fa-solid fa-spa logo-icon"></i>
-                <div class="logo-text"><span>Studio</span><strong>Beleza Delicada</strong></div>
+            <div class="logo"><i class="fa-solid fa-spa logo-icon"></i><div class="logo-text"><span>Studio</span><strong>Nay Lopes</strong></div></div>
+            <div class="nav-actions">
+                <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Ativar modo escuro" title="Modo escuro"><i class="fa-solid fa-moon" aria-hidden="true"></i></button>
+                <button type="button" class="nav-toggle" aria-expanded="false" aria-label="Abrir menu" aria-controls="site-navigation"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
             </div>
-            <nav class="nav-links">
+            <nav class="nav-links" id="site-navigation" aria-label="Navegação principal">
                 <a href="index.html">Home</a>
                 <a href="servicos.html">Serviços</a>
                 <a href="profissionais.html">Profissionais</a>
@@ -22,7 +32,7 @@
                 <a href="contato.html">Contato</a>
                 <a href="agendar.html">Agendar</a>
                 <a href="cadastro.html">Cadastre-se</a>
-                <a href="login.html" class="btn-admin-nav active"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+                <a href="login.html" class="active btn-admin-nav"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
             </nav>
         </header>
 
@@ -43,7 +53,7 @@
                 </p>
             </form>
         </main>
-        <footer>© 2026 Studio Beleza Delicada</footer>
+        <footer>© 2026 Studio Nay Lopes</footer>
     </div>
     <script src="script.js"></script>
 </body>

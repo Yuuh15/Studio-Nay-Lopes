@@ -9,7 +9,98 @@ function salvarAgendamentos() {
     localStorage.setItem('dbAgendamentos', JSON.stringify(dbAgendamentos));
 }
 
+/* ============================================================
+   ALTERNÂNCIA DE TEMA (LIGHT / DARK MODE)
+   - Preferência salva no localStorage ('sbd-theme')
+   - Respeita a preferência do sistema quando não há escolha salva
+   ============================================================ */
+const THEME_KEY = 'sbd-theme';
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    try {
+        localStorage.setItem(THEME_KEY, theme);
+    } catch (e) { /* armazenamento indisponível */ }
+
+    const btn = document.getElementById('theme-toggle');
+    if (btn) {
+        const icon = btn.querySelector('i');
+        if (icon) {
+            icon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+        }
+        btn.setAttribute('aria-label', theme === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro');
+        btn.title = theme === 'dark' ? 'Modo claro' : 'Modo escuro';
+    }
+}
+
+function getPreferredTheme() {
+    let saved = null;
+    try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
+    if (saved === 'dark' || saved === 'light') return saved;
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        return 'dark';
+    }
+    return 'light';
+}
+
+function initTheme() {
+    applyTheme(getPreferredTheme());
+    const btn = document.getElementById('theme-toggle');
+    if (btn) {
+        btn.addEventListener('click', () => {
+            const atual = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+            applyTheme(atual === 'dark' ? 'light' : 'dark');
+        });
+    }
+}
+
+/* ============================================================
+   MENU MOBILE (HAMBÚRGUER)
+   ============================================================ */
+function initMobileNav() {
+    const toggle = document.querySelector('.nav-toggle');
+    const links = document.querySelector('.nav-links');
+    if (!toggle || !links) return;
+
+    const setIcon = (open) => {
+        const icon = toggle.querySelector('i');
+        if (icon) icon.className = open ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+    };
+
+    toggle.addEventListener('click', () => {
+        setIcon(links.classList.toggle('open'));
+    });
+
+    // Fecha o menu ao escolher um link
+    links.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', () => {
+            links.classList.remove('open');
+            setIcon(false);
+        });
+    });
+
+    // Fecha o menu ao voltar para o desktop
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 820 && links.classList.contains('open')) {
+            links.classList.remove('open');
+            setIcon(false);
+        }
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && links.classList.contains('open')) {
+            links.classList.remove('open');
+            setIcon(false);
+            toggle.focus();
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
+    initMobileNav();
+
     if (document.getElementById('users-table-body') || document.querySelector('.admin-dashboard')) {
         renderAdminDashboard();
     }
@@ -73,12 +164,14 @@ function handleRegister(event, type) {
 
 // SERVIÇOS DISPONÍVEIS (nome, profissional opcional, valor)
 const SERVICOS = [
-    { nome: "Corte Feminino", valor: 90.00 },
-    { nome: "Corte Masculino", valor: 50.00 },
-    { nome: "Coloração", valor: 220.00 },
-    { nome: "Progressiva", valor: 350.00 },
-    { nome: "Manicure & Pedicure", valor: 60.00 },
-    { nome: "Design de Sobrancelhas", valor: 45.00 }
+    { nome: "Luzes", valor: 350.00 },
+    { nome: "Progressiva", valor: 130.00 },
+    { nome: "Escova", valor: 60.00 },
+    { nome: "Corte", valor: 45.00 },
+    { nome: "Sobrancelha", valor: 15.00 },
+    { nome: "Cílios", valor: 80.00 },
+    { nome: "Manutenção de cílios até 15 dias", valor: 45.00 },
+    { nome: "Remoção de cílios", valor: 45.00 }
 ];
 
 // PREENCHER SELECTS DO FORMULÁRIO DE AGENDAMENTO
@@ -181,4 +274,112 @@ function renderAdminDashboard() {
     if (elRev) elRev.innerText = `R$ ${totalRev.toFixed(2).replace('.', ',')}`;
     if (elBookings) elBookings.innerText = dbAgendamentos.length;
     if (elOccupancy) elOccupancy.innerText = Math.min(100, dbAgendamentos.length * 10) + '%';
+}
+
+/* ============================================================
+   GALERIA: AMPLIAR IMAGENS E REPRODUZIR VÍDEOS
+   ============================================================ */
+
+function initMediaLightbox() {
+    const lightbox = document.getElementById('media-lightbox');
+    const content = document.getElementById('media-lightbox-content');
+    const caption = document.getElementById('media-lightbox-caption');
+
+    if (!lightbox || !content || !caption) {
+        return;
+    }
+
+    // Evita registrar os mesmos eventos mais de uma vez.
+    if (lightbox.dataset.initialized === 'true') {
+        return;
+    }
+
+    lightbox.dataset.initialized = 'true';
+
+    function fecharLightbox() {
+        content.querySelectorAll('video').forEach(video => {
+            video.pause();
+            video.removeAttribute('src');
+            video.load();
+        });
+
+        content.replaceChildren();
+        caption.textContent = '';
+        lightbox.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.gallery-item').forEach(item => {
+        item.addEventListener('click', () => {
+            content.replaceChildren();
+
+            const imagem = item.querySelector('img');
+            const videoOriginal = item.querySelector('video');
+            const caminhoVideo = item.dataset.videoSrc;
+
+            if (caminhoVideo || videoOriginal) {
+                const video = document.createElement('video');
+
+                video.src = caminhoVideo ||
+                    videoOriginal.currentSrc ||
+                    videoOriginal.src;
+
+                video.controls = true;
+                video.playsInline = true;
+                video.preload = 'metadata';
+                video.autoplay = true;
+
+                content.appendChild(video);
+
+                // Alguns navegadores podem bloquear o autoplay.
+                const tentativa = video.play();
+                if (tentativa && typeof tentativa.catch === 'function') {
+                    tentativa.catch(() => {});
+                }
+            } else if (imagem) {
+                const imagemAmpliada = document.createElement('img');
+
+                imagemAmpliada.src = imagem.currentSrc || imagem.src;
+                imagemAmpliada.alt = imagem.alt || 'Imagem ampliada';
+
+                content.appendChild(imagemAmpliada);
+            } else {
+                return;
+            }
+
+            caption.textContent = item.dataset.caption ||
+                (imagem ? imagem.alt : 'Vídeo da galeria');
+
+            lightbox.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        });
+    });
+
+    const botaoFechar = lightbox.querySelector('.media-lightbox-close');
+
+    if (botaoFechar) {
+        botaoFechar.addEventListener('click', fecharLightbox);
+    }
+
+    lightbox.addEventListener('click', event => {
+        if (event.target === lightbox) {
+            fecharLightbox();
+        }
+    });
+
+    document.addEventListener('keydown', event => {
+        if (
+            event.key === 'Escape' &&
+            lightbox.getAttribute('aria-hidden') === 'false'
+        ) {
+            fecharLightbox();
+        }
+    });
+}
+
+// Funciona mesmo se o script carregar depois do HTML.
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMediaLightbox);
+} else {
+    initMediaLightbox();
 }

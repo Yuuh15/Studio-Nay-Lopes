@@ -1,20 +1,30 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profissionais - Studio Beleza Delicada</title>
+    <title>Profissionais - Studio Nay Lopes</title>
     <link rel="stylesheet" href="style.css">
+    <script>
+        (function () {
+            try {
+                var theme = localStorage.getItem('sbd-theme');
+                if (!theme && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) theme = 'dark';
+                if (theme === 'light' || theme === 'dark') document.documentElement.setAttribute('data-theme', theme);
+            } catch (e) {}
+        })();
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="main-wrapper">
         <header class="navbar">
-            <div class="logo">
-                <i class="fa-solid fa-spa logo-icon"></i>
-                <div class="logo-text"><span>Studio</span><strong>Beleza Delicada</strong></div>
+            <div class="logo"><i class="fa-solid fa-spa logo-icon"></i><div class="logo-text"><span>Studio</span><strong>Nay Lopes</strong></div></div>
+            <div class="nav-actions">
+                <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Ativar modo escuro" title="Modo escuro"><i class="fa-solid fa-moon" aria-hidden="true"></i></button>
+                <button type="button" class="nav-toggle" aria-expanded="false" aria-label="Abrir menu" aria-controls="site-navigation"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
             </div>
-            <nav class="nav-links">
+            <nav class="nav-links" id="site-navigation" aria-label="Navegação principal">
                 <a href="index.html">Home</a>
                 <a href="servicos.html">Serviços</a>
                 <a href="profissionais.html" class="active">Profissionais</a>
@@ -29,12 +39,10 @@
         <main class="page-card">
             <h1><i class="fa-solid fa-user-tie"></i> Nossa Equipe</h1>
             <div class="services-grid" id="lista-profissionais">
-                <div class="service-card"><i class="fa-solid fa-user-tie"></i><h3>Ana Souza</h3><p>Cabeleireira especialista em coloração.</p></div>
-                <div class="service-card"><i class="fa-solid fa-user-tie"></i><h3>Beatriz Lima</h3><p>Esteticista e designer de sobrancelhas.</p></div>
-                <div class="service-card"><i class="fa-solid fa-user-tie"></i><h3>Carla Mendes</h3><p>Manicure e pedicure profissional.</p></div>
+                <div class="service-card"><i class="fa-solid fa-user-tie"></i><h3>Nay Lopes</h3><p>Cabeleireira e designer de sobrancelhas e cílios. Especialista em luzes, progressiva e corte.</p></div>
             </div>
         </main>
-        <footer>© 2026 Studio Beleza Delicada</footer>
+        <footer>© 2026 Studio Nay Lopes</footer>
     </div>
     <script src="script.js"></script>
 </body>
