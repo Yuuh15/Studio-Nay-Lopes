@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <!-- A main-wrapper envolve TUDO para manter a largura máxima e centrar -->
     <div class="main-wrapper">
         <header class="navbar">
             <div class="logo"><i class="fa-solid fa-spa logo-icon"></i><div class="logo-text"><span>Painel</span><strong>Administrativo</strong></div></div>
@@ -29,7 +30,9 @@
             </nav>
         </header>
 
-        <main class="admin-dashboard">
+        <!-- Adicionado o gap: 20px para separar os blocos verticalmente -->
+        <main class="admin-dashboard" style="gap: 20px;">
+            
             <!-- Métricas -->
             <div class="metrics-grid">
                 <div class="metric-card">
@@ -52,12 +55,12 @@
                  <h3>Taxa de Ocupação</h3>
                  <p id="occupancy-rate">85%</p> <!-- Requisito RF12 -->
                  </div>
-                 </div>
                 </div>
-            </div>
+            </div> <!-- Aqui terminam os cartões. A div extra que quebrava o site foi removida daqui! -->
 
             <!-- Tabela de Clientes e Profissionais Registrados -->
-            <div class="db-card" style="margin-top: 24px;">
+            <!-- Margens removidas pois o 'gap' no main já resolve o espaçamento -->
+            <div class="db-card">
                 <h3><i class="fa-solid fa-users-gear"></i> Profissionais & Clientes Registrados</h3>
                 <div class="table-responsive">
                     <table>
@@ -76,7 +79,7 @@
             </div>
 
             <!-- Tabela de Agendamentos -->
-            <div class="db-card" style="margin-top: 24px;">
+            <div class="db-card">
                 <h3><i class="fa-solid fa-table"></i> Registros de Agendamentos</h3>
                 <div class="table-responsive">
                     <table>
@@ -96,8 +99,10 @@
                     </table>
                 </div>
             </div>
+            
         </main>
-    </div>
+    </div> <!-- Fim correto da main-wrapper -->
+    
     <script src="script.js"></script>
 </body>
 </html>

@@ -923,3 +923,39 @@ footer {
         animation-iteration-count: 1 !important;
     }
 }
+
+/* ===== MEDIDOR DE SENHA E VALIDAÇÃO ===== */
+.password-strength-container {
+    height: 6px;
+    background-color: var(--border-color);
+    border-radius: 4px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.password-strength-bar {
+    height: 100%;
+    width: 0;
+    border-radius: 4px;
+    transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.password-strength-text, .password-match-text {
+    display: block;
+    margin-top: 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Níveis de Força da Senha */
+.strength-weak { width: 33.33%; background-color: #e57373; }
+.strength-medium { width: 66.66%; background-color: #fbc02d; }
+.strength-strong { width: 100%; background-color: #81c784; }
+
+.text-weak { color: #e57373; }
+.text-medium { color: #d4a017; }
+.text-strong { color: #81c784; }
+
+/* Validação de senhas iguais */
+.match-yes { color: #81c784; }
+.match-no { color: #e57373; }

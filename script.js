@@ -383,3 +383,215 @@ if (document.readyState === 'loading') {
 } else {
     initMediaLightbox();
 }
+
+// Lógica de Validação de Senha em Tempo Real
+document.addEventListener('DOMContentLoaded', () => {
+    const senhaInput = document.getElementById('cli-senha');
+    const confirmaSenhaInput = document.getElementById('cli-confirma-senha');
+    const strengthBar = document.getElementById('strength-bar');
+    const strengthText = document.getElementById('strength-text');
+    const matchText = document.getElementById('match-text');
+
+    if (senhaInput && strengthBar && strengthText) {
+        senhaInput.addEventListener('input', () => {
+            const val = senhaInput.value;
+            let strength = 0;
+            
+            // Critérios de pontuação:
+            if (val.length >= 8) strength += 1; // Pelo menos 8 caracteres
+            if (val.match(/(?=.*[a-z])(?=.*[A-Z])/)) strength += 1; // Maiúscula e Minúscula
+            if (val.match(/(?=.*\d)/)) strength += 1; // Número
+            if (val.match(/(?=.*[^a-zA-Z\d])/)) strength += 1; // Caractere Especial
+
+            // Reseta as classes
+            strengthBar.className = 'password-strength-bar';
+            strengthText.className = 'password-strength-text';
+
+            // Aplica o feedback visual
+            if (val.length === 0) {
+                strengthText.textContent = '';
+            } else if (strength <= 2) {
+                strengthBar.classList.add('strength-weak');
+                strengthText.classList.add('text-weak');
+                strengthText.textContent = 'Força: Fraca (Adicione números e símbolos)';
+            } else if (strength === 3) {
+                strengthBar.classList.add('strength-medium');
+                strengthText.classList.add('text-medium');
+                strengthText.textContent = 'Força: Média (Adicione mais variedade)';
+            } else if (strength >= 4) {
+                strengthBar.classList.add('strength-strong');
+                strengthText.classList.add('text-strong');
+                strengthText.textContent = 'Força: Forte';
+            }
+            
+            // Revalida se as senhas batem ao alterar a primeira senha
+            if(confirmaSenhaInput) checkMatch();
+        });
+    }
+
+    if (confirmaSenhaInput && matchText) {
+        confirmaSenhaInput.addEventListener('input', checkMatch);
+    }
+
+    function checkMatch() {
+        if (confirmaSenhaInput.value.length === 0) {
+            matchText.textContent = '';
+            return;
+        }
+        if (senhaInput.value === confirmaSenhaInput.value) {
+            matchText.textContent = 'As senhas coincidem!';
+            matchText.className = 'password-match-text match-yes';
+        } else {
+            matchText.textContent = 'As senhas não coincidem.';
+            matchText.className = 'password-match-text match-no';
+        }
+    }
+});
+
+/* =======================================================
+   MÓDULO DE AUTENTICAÇÃO E SESSÃO (Simulação JWT/Sessão)
+======================================================= */
+
+// 1. Inicializar a base de dados fictícia de utilizadores se não existir
+if (!localStorage.getItem('studio_users')) {
+    const defaultUsers = [
+        { 
+            id: 1, 
+            nome: 'Admin Studio', 
+            email: 'admin@studio.com', 
+            senha: 'admin123', 
+            tipo: 'admin' 
+        }
+    ];
+    localStorage.setItem('studio_users', JSON.stringify(defaultUsers));
+}
+
+// 2. Função de Registo de Cliente
+function handleRegister(event) {
+    event.preventDefault();
+
+    const nome = document.getElementById('cli-nome').value;
+    const email = document.getElementById('cli-email').value;
+    const telef = document.getElementById('cli-telef').value;
+    const senha = document.getElementById('cli-senha').value;
+    const confSenha = document.getElementById('cli-confirma-senha').value;
+
+    if (senha !== confSenha) {
+        alert('As palavras-passe não coincidem. Por favor, verifique.');
+        return;
+    }
+
+    let users = JSON.parse(localStorage.getItem('studio_users'));
+
+    // Verificar se o e-mail já existe
+    if (users.find(u => u.email === email)) {
+        alert('Este e-mail já está registado. Por favor, faça login.');
+        return;
+    }
+
+    const newUser = {
+        id: Date.now(),
+        nome: nome,
+        email: email,
+        telefone: telef,
+        senha: senha,
+        tipo: 'cliente' // Força o tipo para Cliente (RF02)
+    };
+
+    users.push(newUser);
+    localStorage.setItem('studio_users', JSON.stringify(users));
+
+    alert('Conta criada com sucesso! Já pode iniciar sessão.');
+    window.location.href = 'login.html';
+}
+
+// 3. Função de Login
+function handleLogin(event) {
+    event.preventDefault();
+
+    const email = document.getElementById('login-email').value;
+    const senha = document.getElementById('login-senha').value;
+
+    let users = JSON.parse(localStorage.getItem('studio_users'));
+    const user = users.find(u => u.email === email && u.senha === senha);
+
+    if (user) {
+        // Criar a "sessão" simulando um JWT payload
+        const sessionData = {
+            token: 'jwt_simulated_' + Date.now(),
+            userId: user.id,
+            nome: user.nome,
+            tipo: user.tipo
+        };
+        localStorage.setItem('studio_session', JSON.stringify(sessionData));
+
+        alert(`Bem-vindo(a) de volta, ${user.nome.split(' ')[0]}!`);
+
+        // Diferenciar a navegação conforme o Perfil
+        if (user.tipo === 'admin') {
+            window.location.href = 'admin.html';
+        } else {
+            window.location.href = 'index.html'; // Cliente vai para a Home ou Agendar
+        }
+    } else {
+        alert('E-mail ou palavra-passe incorretos.');
+    }
+}
+
+// 4. Função de Recuperação de Palavra-passe
+function handleRecuperarSenha(event) {
+    event.preventDefault();
+    const email = document.getElementById('recuperar-email').value;
+    
+    // Simulação visual para o utilizador
+    alert(`Se o e-mail '${email}' estiver registado, receberá as instruções em breve.`);
+    window.location.href = 'login.html';
+}
+
+// 5. Função de Logout
+function logout() {
+    localStorage.removeItem('studio_session');
+    window.location.href = 'login.html';
+}
+
+// 6. Diferenciar visualmente a Navegação (Executa em todas as páginas)
+document.addEventListener('DOMContentLoaded', () => {
+    const session = JSON.parse(localStorage.getItem('studio_session'));
+    const navLinks = document.getElementById('site-navigation');
+
+    if (session && navLinks) {
+        // Encontrar as hiperligações existentes no menu
+        const loginLink = navLinks.querySelector('a[href="login.html"]');
+        const cadastroLink = navLinks.querySelector('a[href="cadastro.html"]');
+
+        // Esconder o botão de registo, pois o utilizador já tem sessão iniciada
+        if (cadastroLink) {
+            cadastroLink.style.display = 'none';
+        }
+
+        // Alterar o botão "Login" para "Sair (Nome)"
+        if (loginLink) {
+            loginLink.innerHTML = `<i class="fa-solid fa-right-from-bracket"></i> Sair (${session.nome.split(' ')[0]})`;
+            loginLink.href = "#";
+            loginLink.classList.remove('active');
+            loginLink.style.backgroundColor = 'transparent';
+            loginLink.style.border = '1px solid var(--accent-marsala)';
+            loginLink.style.color = 'var(--accent-marsala)';
+            
+            // Adicionar evento de logout
+            loginLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                logout();
+            });
+        }
+
+        // Se for um Administrador, adicionar o atalho para o Painel de Gestão
+        if (session.tipo === 'admin') {
+            const adminLink = document.createElement('a');
+            adminLink.href = 'admin.html';
+            adminLink.innerHTML = '<i class="fa-solid fa-gear"></i> Painel Admin';
+            adminLink.className = 'btn-admin-nav'; // Mantém o destaque do botão
+            navLinks.insertBefore(adminLink, loginLink);
+        }
+    }
+});
