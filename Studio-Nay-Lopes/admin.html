@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#fdf6f3" id="meta-theme-color">
+    <title>Painel Administrativo - Studio Nay Lopes</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        (function () {
+            try {
+                var theme = localStorage.getItem('sbd-theme');
+                if (!theme && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) theme = 'dark';
+                if (theme === 'light' || theme === 'dark') document.documentElement.setAttribute('data-theme', theme);
+            } catch (e) {}
+        })();
+    </script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <a href="#conteudo" class="skip-link">Pular para o conteúdo</a>
+    <!-- A main-wrapper envolve TUDO para manter a largura máxima e centrar -->
+    <div class="main-wrapper">
+        <header class="navbar">
+            <div class="logo"><i class="fa-solid fa-spa logo-icon"></i><div class="logo-text"><span>Painel</span><strong>Administrativo</strong></div></div>
+            <div class="nav-actions">
+                <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Ativar modo escuro" title="Modo escuro"><i class="fa-solid fa-moon" aria-hidden="true"></i></button>
+                <button type="button" class="nav-toggle" aria-expanded="false" aria-label="Abrir menu" aria-controls="site-navigation"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
+            </div>
+            <nav class="nav-links" id="site-navigation" aria-label="Navegação principal">
+                <a href="index.html"><i class="fa-solid fa-arrow-left"></i> Voltar ao Site</a>
+            </nav>
+        </header>
+
+        <!-- Adicionado o gap: 20px para separar os blocos verticalmente -->
+        <main id="conteudo" class="admin-dashboard" style="gap: 20px;">
+            
+            <!-- Métricas -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <i class="fa-solid fa-wallet metric-icon"></i>
+                    <div>
+                        <h3>Faturamento Total</h3>
+                        <p id="total-revenue">R$ 0,00</p>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <i class="fa-solid fa-calendar-check metric-icon"></i>
+                    <div>
+                        <h3>Agendamentos</h3>
+                        <p id="total-bookings">0</p>
+                    </div>
+                </div>
+                <div class="metric-card">
+                 <i class="fa-solid fa-chart-pie metric-icon"></i>
+                 <div>
+                 <h3>Taxa de Ocupação</h3>
+                 <p id="occupancy-rate">85%</p> <!-- Requisito RF12 -->
+                 </div>
+                </div>
+            </div> <!-- Aqui terminam os cartões. A div extra que quebrava o site foi removida daqui! -->
+
+            <!-- Tabela de Clientes e Profissionais Registrados -->
+            <!-- Margens removidas pois o 'gap' no main já resolve o espaçamento -->
+            <div class="db-card">
+                <h3><i class="fa-solid fa-users-gear"></i> Profissionais & Clientes Registrados</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Nome</th>
+                                <th>Contato / Detalhe</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body">
+                            <!-- Preenchido dinamicamente pelo JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tabela de Agendamentos -->
+            <div class="db-card">
+                <h3><i class="fa-solid fa-table"></i> Registros de Agendamentos</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Serviço</th>
+                                <th>Data/Horário</th>
+                                <th>Valor</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="db-table-body">
+                            <!-- Preenchido dinamicamente pelo JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+        </main>
+    </div> <!-- Fim correto da main-wrapper -->
+    
+    <script src="script.js"></script>
+</body>
+</html>
